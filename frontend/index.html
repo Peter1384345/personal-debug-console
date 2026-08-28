@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个人调试台 · Personal Debug Console</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%23e8b86a'/><path d='M18 44 L28 34 L18 24 M32 44 L46 44' stroke='%231a1411' stroke-width='5' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>" />
+</head>
+<body>
+
+  <!-- ========== 手绘涂鸦装饰层 ========== -->
+  <div class="doodles" aria-hidden="true">
+    <!-- 星星 -->
+    <svg class="d1" viewBox="0 0 120 120"><g fill="none" stroke="#e8b86a" stroke-width="2" stroke-linecap="round"><path d="M60 14 L66 50 L102 56 L66 62 L60 98 L54 62 L18 56 L54 50 Z" fill="rgba(232,184,106,0.12)"/><circle cx="100" cy="20" r="2" fill="#e8b86a"/><circle cx="10" cy="90" r="1.6" fill="#e8b86a"/></g></svg>
+    <!-- 涂鸦箭头 -->
+    <svg class="d2" viewBox="0 0 180 110"><g fill="none" stroke="#7bb4d4" stroke-width="2.4" stroke-linecap="round"><path d="M10 86 Q 40 10 90 32 T 170 56" stroke-dasharray="3 5"/><path d="M162 46 L172 56 L160 66"/></g></svg>
+    <!-- 小点圈 -->
+    <svg class="d3" viewBox="0 0 90 90"><circle cx="45" cy="45" r="34" fill="none" stroke="#b097d4" stroke-width="2" stroke-dasharray="2 5"/></svg>
+    <!-- 闪电箭头 -->
+    <svg class="d4" viewBox="0 0 140 120"><g fill="none" stroke="#7dc3a5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M70 10 L40 60 L62 60 L42 110 L100 52 L76 52 L96 10 Z" fill="rgba(125,195,165,0.1)"/></g></svg>
+    <!-- 小花 -->
+    <svg class="d5" viewBox="0 0 60 60"><g fill="rgba(224,122,136,0.25)" stroke="#e07a88" stroke-width="1.6"><circle cx="30" cy="14" r="7"/><circle cx="46" cy="30" r="7"/><circle cx="30" cy="46" r="7"/><circle cx="14" cy="30" r="7"/><circle cx="30" cy="30" r="6" fill="#e8b86a"/></g></svg>
+  </div>
+
+  <!-- ========== 顶栏 ========== -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo" title="个人调试台">
+          <!-- 扳手图标 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0 5 5l3.7 3.7a1.5 1.5 0 0 1-2.1 2.1l-1.4-1.4-.8.8 1.4 1.4a1.5 1.5 0 0 1-2.1 2.1l-3.7-3.7a4 4 0 0 0-5.9-4.7L3.6 17a2.2 2.2 0 1 1-3.1-3.1l5.5-5.5a4 4 0 0 0 4.7-5.9l.9.9z"/></svg>
+        </div>
+        <div class="brand-title">
+          <h1>个人调试台</h1>
+          <p>Debug Console · v1.0</p>
+        </div>
+      </div>
+
+      <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-page="disk">
+          <span class="dot"></span>磁盘 &amp; 文件
+        </button>
+        <button class="tab-btn" data-page="proc">
+          <span class="dot"></span>进程监控
+        </button>
+      </nav>
+
+      <div class="clock" id="clock">
+        <span>加载中…</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========== 主体 ========== -->
+  <main>
+
+    <!-- ================ 页面一：磁盘 & 文件 ================ -->
+    <section class="page active" id="page-disk">
+
+      <div class="section-head">
+        <h2>💽 磁盘使用体检</h2>
+        <span class="sub">总览 · 告警阈值 ≥75% 预警 / ≥90% 危险</span>
+      </div>
+
+      <div class="dashboard">
+        <!-- 左：磁盘分区列表 -->
+        <div class="glass sticker">
+          <div id="disk-list">
+            <div class="skeleton" style="height:120px;margin-bottom:14px;"></div>
+            <div class="skeleton" style="height:120px;"></div>
+          </div>
+        </div>
+        <!-- 右：统计卡 + 浏览器启动 -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="glass tape" id="disk-summary">
+            <div style="font-family: var(--font-hand); font-size:24px; color: var(--ink); margin-bottom:8px;">
+              📊 汇总速览
+            </div>
+            <div class="stat-grid" id="disk-stat-grid">
+              <div class="skeleton stat-card" style="height:100px;"></div>
+              <div class="skeleton stat-card" style="height:100px;"></div>
+            </div>
+          </div>
+          <div class="glass">
+            <div style="font-family: var(--font-hand); font-size:22px; margin-bottom:10px;">📂 文件探索</div>
+            <div style="color:var(--ink-soft);font-size:13.5px;margin-bottom:14px;">
+              按文件类型用不同颜色归类，文件夹一键打开，可直接定位到所在目录。
+            </div>
+            <button class="btn primary" onclick="document.getElementById('browser-anchor').scrollIntoView({behavior:'smooth'})">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              跳到文件浏览器 ↓
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="browser-anchor" style="margin-top:24px"></div>
+
+      <div class="section-head">
+        <h2>📂 彩色文件浏览器</h2>
+        <span class="sub" id="browser-count">—</span>
+      </div>
+
+      <div class="toolbar">
+        <div class="path-input">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <input type="text" id="path-input" placeholder="输入绝对路径，例如 C:\Users 或 /home/me ，回车浏览…" spellcheck="false"/>
+        </div>
+        <button class="btn primary" id="btn-browse">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          浏览
+        </button>
+        <button class="btn" id="btn-home" title="回到主目录">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 12 3l9 9v8a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg>
+          主目录
+        </button>
+        <button class="btn ghost" id="btn-up" title="上级目录">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          上一级
+        </button>
+        <button class="btn" id="btn-refresh" title="刷新">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 3v6h-6"/></svg>
+          刷新
+        </button>
+        <label class="btn ghost" style="cursor:pointer;">
+          <input type="checkbox" id="chk-dirsize" style="accent-color: var(--accent-gold);"> 估算子目录大小
+        </label>
+      </div>
+
+      <!-- 路径面包屑 -->
+      <div class="path-crumbs" id="path-crumbs">
+        <span class="crumb">—</span>
+      </div>
+
+      <!-- 分类图例 -->
+      <div class="legend" id="file-legend"></div>
+
+      <!-- 文件网格 -->
+      <div class="glass" style="padding:18px;">
+        <div id="file-grid" class="file-grid">
+          <div class="empty-state">
+            <div class="icon">🗂️</div>
+            <b>还没加载目录</b>
+            <small>输入路径后点「浏览」开始</small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================ 页面二：进程监控 ================ -->
+    <section class="page" id="page-proc">
+
+      <div class="section-head">
+        <h2>🛰️ 后台服务扫描</h2>
+        <span class="sub">基于规则 + 白名单 + 启发式分类</span>
+      </div>
+
+      <div class="dashboard" style="grid-template-columns: 1fr 1.2fr;">
+        <!-- 左：汇总 + 操作 -->
+        <div class="glass sticker" id="proc-overview">
+          <div style="font-family: var(--font-hand); font-size:24px; color: var(--ink); margin-bottom: 4px;">
+            🧾 进程分类报告
+          </div>
+          <div style="font-size:12px; color:var(--ink-dim); font-family:var(--font-mono); margin-bottom:14px;">
+            Process Classification · 实时采集
+          </div>
+          <div class="stack" id="proc-stack">
+            <span style="width:60%; background:var(--ok);"></span>
+            <span style="width:10%; background:var(--warn);"></span>
+            <span style="width:30%; background:var(--unknown);"></span>
+          </div>
+          <div id="proc-stats" style="margin-top: 6px;">
+            <!-- 动态注入 -->
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 18px;">
+            <button class="btn primary" id="btn-refresh-proc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 3v6h-6"/></svg>
+              重新扫描
+            </button>
+            <button class="btn" id="btn-notify">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+              推送可疑项通知
+            </button>
+            <button class="btn ghost" id="btn-open-bad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              仅看无益/可疑
+            </button>
+          </div>
+        </div>
+
+        <!-- 右：分类统计卡 -->
+        <div class="stat-grid" id="proc-card-grid" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="skeleton stat-card" style="height:110px;"></div>
+          <div class="skeleton stat-card" style="height:110px;"></div>
+          <div class="skeleton stat-card" style="height:110px;"></div>
+          <div class="skeleton stat-card" style="height:110px;"></div>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:10px;">
+        <h2>🔍 进程列表</h2>
+        <span class="sub" id="proc-count-sub">采集约需 2 秒</span>
+      </div>
+
+      <div class="proc-toolbar">
+        <div class="proc-filters">
+          <div style="position:relative;">
+            <input type="text" id="proc-search" placeholder="🔍 搜索进程名 / PID / 路径…"
+              style="padding:10px 14px 10px 40px; width: 320px; border-radius: 12px; border:1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--ink); font-family:var(--font-mono); font-size:13px; outline:none;">
+            <svg style="position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--accent-gold);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          </div>
+          <div class="chips" id="proc-chips">
+            <span class="chip active" data-cat="all" style="--chip-color:#f4ecd8;--bg:rgba(244,236,216,0.1);">全部</span>
+            <span class="chip" data-cat="beneficial" style="--chip-color:#7dc3a5;--bg:rgba(125,195,165,0.12);">有益</span>
+            <span class="chip" data-cat="unnecessary" style="--chip-color:#f97316;--bg:rgba(249,115,22,0.14);">无益/可疑</span>
+            <span class="chip" data-cat="unknown" style="--chip-color:#94a3b8;--bg:rgba(148,163,184,0.12);">未知</span>
+          </div>
+        </div>
+        <div class="proc-count" id="proc-count">共 — 条</div>
+      </div>
+
+      <div class="glass" style="padding: 0 !important;">
+        <div class="proc-table-wrap">
+          <table class="proc-table" id="proc-table">
+            <thead>
+              <tr>
+                <th data-sort="name" style="width: 24%;">进程名</th>
+                <th data-sort="category_label" style="width: 10%;">分类</th>
+                <th data-sort="mem_rss_mb" class="num" style="width: 12%;">内存</th>
+                <th style="width: 14%;">内存占比</th>
+                <th data-sort="cpu_percent" class="num" style="width: 8%;">CPU %</th>
+                <th style="width: 16%;">分类原因</th>
+                <th data-sort="pid" class="num" style="width: 7%;">PID</th>
+                <th style="width: 9%;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="proc-tbody">
+              <tr><td colspan="8"><div class="empty-state"><div class="icon">🛰️</div><b>正在扫描进程…</b><small>首次采集 CPU 数据约需 2 秒</small></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ========== Toast 容器 ========== -->
+  <div class="toast-wrap" id="toast-wrap" aria-live="polite"></div>
+
+  <!-- ========== 脚本 ========== -->
+  <script src="./js/app.js"></script>
+</body>
+</html>
