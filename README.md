@@ -6,6 +6,20 @@
 
 ---
 
+## ⬇️ 直接下载（无需安装 Python）
+
+> 所有分发产物都在 [`release`](https://github.com/Peter1384345/personal-debug-console/tree/release) 分支，下载表如下：
+
+| 版本 | 文件 | 说明 |
+|---|---|---|
+| 🖥️ **Windows 桌面版** | [`PersonalDebugConsole.exe`](https://github.com/Peter1384345/personal-debug-console/raw/release/PersonalDebugConsole.exe) | 单个 exe，双击运行 |
+| 📄 **便携版网页** | [`PersonalDebugConsole-Portable.html`](https://github.com/Peter1384345/personal-debug-console/raw/release/PersonalDebugConsole-Portable.html) | 一个 HTML 文件，可拷进 U 盘 |
+| 🌐 **下载主页** | [GitHub Pages](https://peter1384345.github.io/personal-debug-console/) | 含介绍、版本、SHA256 校验 |
+
+桌面版双击后会自动启动本地服务并打开浏览器；便携版单独打开时展示浏览器可见的系统信息，若本机 exe 在跑则自动连上后端，解锁磁盘 / 文件 / 进程全能力。
+
+---
+
 ## ✨ 核心功能
 
 ### ① 磁盘 & 文件管理（彩色图标 + 告警）
@@ -63,10 +77,17 @@ personal-debug-console/
 │       ├── disk_manager.py      # 磁盘扫描 + 文件浏览 + 颜色分类
 │       ├── service_monitor.py   # 进程扫描 + 有益/无益/未知 分类引擎
 │       └── notifier.py          # 桌面通知 + 路径打开 + Rich 控制台渲染
-└── frontend/
-    ├── index.html               # 主页（手绘装饰 + SVG 图标）
-    ├── css/style.css            # 暗夜暖调贴纸风格样式（~700 行）
-    └── js/app.js                # Tab 切换、磁盘/进程 UI、Toast、排序筛选
+├── frontend/
+│   ├── index.html               # 主页（手绘装饰 + SVG 图标）
+│   ├── css/style.css            # 暗夜暖调贴纸风格样式（~700 行）
+│   └── js/app.js                # Tab 切换、磁盘/进程 UI、Toast、排序筛选
+├── packaging/
+│   ├── launcher.py              # 桌面版启动入口：自动挑端口 + 自动开浏览器
+│   ├── build_exe.py             # 一键打包脚本
+│   ├── make_icon.py             # 生成 exe 图标
+│   └── app.ico                  # 打包用图标
+└── portable/
+    └── PersonalDebugConsole-Portable.html   # 单文件便携版网页
 ```
 
 ---
@@ -120,21 +141,23 @@ python start.py cli
 
 ## 📦 打包成单个可执行文件
 
-推荐 **PyInstaller**，Web UI 模式更稳定（CLI 里的 rich 颜色在打包终端里也支持）：
+仓库里已经写好了打包脚本，推荐直接用它（产物为 `dist/PersonalDebugConsole.exe`）：
 
 ```bash
 pip install pyinstaller
 cd personal-debug-console
-
-# 推荐：打包 Web UI 单文件（--add-data 把 frontend 一起打包进去）
-# Windows：
-pyinstaller -F -n 个人调试台 --add-data "frontend;frontend" --collect-all plyer start.py
-
-# macOS / Linux：
-pyinstaller -F -n 个人调试台 --add-data "frontend:frontend" --collect-all plyer start.py
+python packaging/build_exe.py
 ```
 
-产物在 `dist/个人调试台(.exe)`，双击即可启动。
+脚本做了这些事：
+
+- 用 `packaging/launcher.py` 作入口，双击 exe 时自动挑空闲端口、自动打开浏览器；
+- 把 `frontend/` 静态资源一起打进单文件；
+- 整包收集 `plyer` 的桌面通知后端，避免运行时报错；
+- 自动复制一份 `PersonalDebugConsole-Portable.html` 到 `dist/`；
+- 排除 `tkinter / PyQt5 / matplotlib / numpy / pytest` 等无用依赖，尽可能瘦身。
+
+如果你需要手动调整，也可以直接改 `packaging/build_exe.py` 里的 PyInstaller 参数。
 
 ---
 
