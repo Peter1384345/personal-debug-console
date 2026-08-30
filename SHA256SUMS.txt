@@ -1,0 +1,2 @@
+b9b919dd3b4ed8df4b01edc6f4f927b1c91df663e8e0451dbd968df3ef3d9dca *PersonalDebugConsole.exe
+4086ddf033c1ed08003e9e2c49c42eedcade08273b93127c4ab014f6d8502de2 *PersonalDebugConsole-Portable.html
