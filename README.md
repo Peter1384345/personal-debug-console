@@ -159,7 +159,7 @@ python start.py cli
 [dl-win]:      https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-windows.exe
 [dl-linux]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-linux
 [dl-macos]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-macos
-[dl-portable]: https://github.com/Peter1384345/personal-debug-console/raw/builds/v1.0.0/portable.html
+[dl-portable]: https://github.com/Peter1384345/personal-debug-console/raw/builds/v1.0.0/PersonalDebugConsole-portable.html
 [workflow]:    https://github.com/Peter1384345/personal-debug-console/actions/workflows/build-release.yml
 
 ### 🧱 二进制版运行方式
