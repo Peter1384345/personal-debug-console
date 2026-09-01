@@ -139,25 +139,64 @@ python start.py cli
 
 ---
 
-## 📦 打包成单个可执行文件
+## 📦 一键下载（推荐！）
 
-仓库里已经写好了打包脚本，推荐直接用它（产物为 `dist/PersonalDebugConsole.exe`）：
+> 不想折腾 Python 环境？直接下载对应平台的单文件可执行程序，**双击即用**。
+> 便携 HTML 版单文件即可打开，展示完整 UI 设计（演示模式，访问真实系统请用二进制版）。
+
+### 🍱 产物总览
+
+| 平台 / 产物 | 下载 | 大小 | 说明 |
+|---|---|---|---|
+| 🪟 **Windows (x64)** | [⬇️ 个人调试台-v1.0.0-windows.exe][dl-win] | ~32 MB | 单文件 exe · 双击直接启动 Web UI |
+| 🐧 **Linux (x64)** | [⬇️ 个人调试台-v1.0.0-linux][dl-linux] | ~24 MB | ELF 单文件 · 加执行权限后 `./` 运行 |
+| 🍎 **macOS (x64/arm64)** | [⬇️ 个人调试台-v1.0.0-macos][dl-macos] | ~32 MB | Mach-O 单文件 · `chmod +x` 后运行 |
+| 🌐 **便携 HTML 演示版** | [⬇️ 个人调试台-portable-v1.0.0.html][dl-portable] | ~100 KB | 单文件 · 浏览器直接打开 · 零依赖离线可用 |
+
+> **自动构建**：推送到 `v*` tag 会触发 [GitHub Actions 工作流][workflow] 自动打包三平台并上传 Release。
+
+[dl-win]:      https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-windows.exe
+[dl-linux]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-linux
+[dl-macos]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-macos
+[dl-portable]: https://github.com/Peter1384345/personal-debug-console/raw/builds/v1.0.0/portable.html
+[workflow]:    https://github.com/Peter1384345/personal-debug-console/actions/workflows/build-release.yml
+
+### 🧱 二进制版运行方式
+
+```bash
+# Linux / macOS — 加执行权限后双击或命令行启动
+chmod +x "个人调试台-v1.0.0-linux"
+./"个人调试台-v1.0.0-linux"                  # 交互式：选 1 = Web UI
+./"个人调试台-v1.0.0-linux" web              # 直接启动 Web UI（默认 7788 端口）
+./"个人调试台-v1.0.0-linux" cli              # 直接进入命令行模式
+
+# Windows — 双击 .exe 即可
+# 或在 PowerShell 里：
+.\个人调试台-v1.0.0-windows.exe web -p 8888
+```
+
+### 🖨️ 从源码自行打包（贡献者 / 自定义）
+
+项目自带 **一键打包脚本**：
+
+| 平台 | 脚本 | 命令 |
+|---|---|---|
+| Windows | `build.bat` | 双击或 `cmd /c build.bat` |
+| Linux / macOS | `build.sh` | `bash build.sh` |
+| 跨平台（手动） | PyInstaller | 见下方命令 |
 
 ```bash
 pip install pyinstaller
 cd personal-debug-console
-python packaging/build_exe.py
+
+# Windows：
+pyinstaller -F -n 个人调试台 --add-data "frontend;frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
+
+# macOS / Linux：
+pyinstaller -F -n 个人调试台 --add-data "frontend:frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
 ```
 
-脚本做了这些事：
-
-- 用 `packaging/launcher.py` 作入口，双击 exe 时自动挑空闲端口、自动打开浏览器；
-- 把 `frontend/` 静态资源一起打进单文件；
-- 整包收集 `plyer` 的桌面通知后端，避免运行时报错；
-- 自动复制一份 `PersonalDebugConsole-Portable.html` 到 `dist/`；
-- 排除 `tkinter / PyQt5 / matplotlib / numpy / pytest` 等无用依赖，尽可能瘦身。
-
-如果你需要手动调整，也可以直接改 `packaging/build_exe.py` 里的 PyInstaller 参数。
+产物在 `dist/个人调试台(.exe)`，双击即可启动。
 
 ---
 
