@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🔧 个人调试台 · 下载主页</title>
+<meta name="description" content="Personal Debug Console - 一款手绘贴纸风格的系统调试工具箱。Windows / Linux / macOS 单文件可执行 + 便携 HTML 版。">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-0: #14110f;
+  --bg-1: #1c1713;
+  --bg-2: #27201a;
+  --ink: #f4ecd8;
+  --ink-soft: #c9bfab;
+  --ink-dim: #8a7f6c;
+  --gold: #e8b86a;
+  --rose: #e07a88;
+  --mint: #7dc3a5;
+  --sky: #7bb4d4;
+  --lavender: #b097d4;
+  --danger: #e07a6e;
+  --ok: #7dc3a5;
+  --warn: #e8b86a;
+  --glass-bg: rgba(40, 32, 24, 0.55);
+  --glass-bd: rgba(232, 184, 106, 0.18);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-0);
+  color: var(--ink);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 暗夜暖调背景 + 微妙噪点 */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(232,184,106,0.08), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 90% 100%, rgba(224,122,136,0.06), transparent 60%),
+    linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.95 0 0 0 0 0.85 0 0 0 0 0.6 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: -1;
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+
+/* 装饰涂鸦 SVG */
+.scribble {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.5;
+}
+.scribble.tl { top: 30px; left: -40px; transform: rotate(-15deg); }
+.scribble.br { bottom: 20px; right: -30px; transform: rotate(8deg); }
+
+/* 容器 */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  position: relative;
+}
+
+/* 头部 */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+  position: relative;
+}
+.hero .tape {
+  display: inline-block;
+  background: var(--rose);
+  color: var(--ink);
+  padding: 4px 18px;
+  font-family: 'Caveat', cursive;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  transform: rotate(-2deg);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  border-radius: 2px;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-family: 'Caveat', 'Inter', sans-serif;
+  font-size: clamp(3rem, 8vw, 5.6rem);
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 0 8px;
+  color: var(--gold);
+  text-shadow: 4px 4px 0 rgba(0,0,0,0.4), 8px 8px 24px rgba(232,184,106,0.18);
+  letter-spacing: -1px;
+}
+.hero .subtitle {
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  color: var(--ink-soft);
+  margin-top: 12px;
+  font-weight: 500;
+}
+.hero .meta-line {
+  margin-top: 18px;
+  display: inline-flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--ink-soft);
+}
+.badge .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+}
+.badge.warn .dot { background: var(--warn); box-shadow: 0 0 8px var(--warn); }
+
+/* Section */
+.section {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-bd);
+  border-radius: 18px;
+  padding: 28px 28px 32px;
+  margin-bottom: 28px;
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+.section::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: 24px;
+  width: 60px; height: 18px;
+  background: linear-gradient(180deg, rgba(232,184,106,0.5), rgba(232,184,106,0.25));
+  transform: rotate(-1.5deg);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.section h2 {
+  font-family: 'Caveat', 'Inter', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 0 0 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.section h2 .anchor {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+/* 平台自动检测 */
+.detect-banner {
+  background: linear-gradient(135deg, rgba(125,195,165,0.12), rgba(176,151,212,0.08));
+  border: 1px dashed rgba(125,195,165,0.4);
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin-bottom: 22px;
+  font-size: 0.92rem;
+  color: var(--mint);
+  font-family: 'JetBrains Mono', monospace;
+}
+.detect-banner .label { color: var(--ink-dim); margin-right: 8px; }
+.detect-banner b { color: var(--ink); font-weight: 600; }
+
+/* 下载网格 */
+.dl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.dl-card {
+  background: var(--bg-2);
+  border: 1.5px solid var(--glass-bd);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.dl-card:hover {
+  transform: translateY(-3px) rotate(-0.3deg);
+  border-color: var(--gold);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 0 1px var(--gold);
+}
+.dl-card.recommended {
+  border-color: var(--mint);
+  background: linear-gradient(180deg, rgba(125,195,165,0.08), var(--bg-2));
+}
+.dl-card.recommended::after {
+  content: '推荐';
+  position: absolute;
+  top: -10px; right: 14px;
+  background: var(--mint);
+  color: var(--bg-0);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+}
+.dl-card .ico {
+  font-size: 2rem;
+  line-height: 1;
+}
+.dl-card .platform {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+.dl-card .filename {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  word-break: break-all;
+}
+.dl-card .size {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+  margin-top: auto;
+}
+.dl-card .btn {
+  margin-top: 12px;
+  background: var(--gold);
+  color: var(--bg-0);
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+}
+.dl-card.recommended .btn { background: var(--mint); }
+
+/* SHA256 表 */
+.sha-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  margin-top: 8px;
+}
+.sha-table th, .sha-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px dashed rgba(232,184,106,0.15);
+  vertical-align: top;
+}
+.sha-table th {
+  color: var(--gold);
+  font-weight: 600;
+  font-size: 0.82rem;
+  background: rgba(0,0,0,0.2);
+}
+.sha-table td.name { color: var(--ink); word-break: break-all; }
+.sha-table td.hash {
+  color: var(--lavender);
+  word-break: break-all;
+  user-select: all;
+}
+.sha-link-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(232,184,106,0.15);
+}
+.sha-link-row a {
+  color: var(--sky);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--sky);
+}
+.sha-link-row a:hover { color: var(--gold); border-color: var(--gold); }
+
+/* 验证命令 */
+.cmd-block {
+  background: rgba(0,0,0,0.4);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 14px;
+  overflow-x: auto;
+  white-space: pre;
+}
+.cmd-block .c-cmd { color: var(--mint); }
+.cmd-block .c-out { color: var(--ink-dim); }
+
+/* 特性卡 */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 8px;
+}
+.feature {
+  padding: 14px 16px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  border-left: 3px solid var(--gold);
+}
+.feature .title {
+  font-weight: 600;
+  color: var(--gold);
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+.feature .desc {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+.feature.mint { border-left-color: var(--mint); }
+.feature.mint .title { color: var(--mint); }
+.feature.rose { border-left-color: var(--rose); }
+.feature.rose .title { color: var(--rose); }
+.feature.lavender { border-left-color: var(--lavender); }
+.feature.lavender .title { color: var(--lavender); }
+
+/* 链接 */
+.footer-links {
+  text-align: center;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px dashed rgba(232,184,106,0.15);
+  font-size: 0.88rem;
+  color: var(--ink-dim);
+}
+.footer-links a {
+  color: var(--sky);
+  text-decoration: none;
+  margin: 0 12px;
+}
+.footer-links a:hover { color: var(--gold); }
+
+/* 复制按钮 */
+.copy-btn {
+  background: transparent;
+  border: 1px solid var(--glass-bd);
+  color: var(--ink-soft);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover { color: var(--gold); border-color: var(--gold); }
+.copy-btn.ok { color: var(--mint); border-color: var(--mint); }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .container { padding: 32px 16px 60px; }
+  .section { padding: 22px 18px 26px; }
+  .hero h1 { font-size: 3rem; }
+  .sha-table { font-size: 0.72rem; }
+  .sha-table th, .sha-table td { padding: 8px 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dl-card:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<svg class="scribble tl" width="180" height="80" viewBox="0 0 180 80" fill="none">
+  <path d="M5 40 Q 30 5, 60 35 T 120 30 T 175 45" stroke="#e8b86a" stroke-width="2.5" stroke-linecap="round" fill="none" stroke-dasharray="0"/>
+  <circle cx="175" cy="45" r="4" fill="#e8b86a"/>
+</svg>
+<svg class="scribble br" width="200" height="100" viewBox="0 0 200 100" fill="none">
+  <path d="M10 60 Q 50 20, 100 50 T 195 30" stroke="#e07a88" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M180 25 L 195 30 L 188 18" stroke="#e07a88" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>
+
+<div class="container">
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <span class="tape">PERSONAL DEBUG CONSOLE</span>
+    <h1>个人调试台</h1>
+    <div class="subtitle">手绘贴纸风 · 系统调试工具箱</div>
+    <div class="meta-line">
+      <span class="badge"><span class="dot"></span> v1.0.0 stable</span>
+      <span class="badge warn"><span class="dot"></span> 自动构建 · 三平台</span>
+      <span class="badge">MIT License</span>
+    </div>
+  </header>
+
+  <!-- ===== 下载 ===== -->
+  <section class="section">
+    <h2>⬇️ 直接下载 <span class="anchor">#download</span></h2>
+
+    <div class="detect-banner" id="detect">
+      <span class="label">检测中…</span>
+    </div>
+
+    <div class="dl-grid" id="dlGrid">
+      <!-- Windows -->
+      <a class="dl-card" id="card-windows"
+         href="https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-windows.exe"
+         data-platform="windows">
+        <div class="ico">🪟</div>
+        <div class="platform">Windows · x64</div>
+        <div class="filename">PersonalDebugConsole-v1.0.0-windows.exe</div>
+        <div class="size">≈ 13.6 MB · 单文件 exe · 双击即用</div>
+        <div class="btn">⬇️ 下载 Windows 版</div>
+      </a>
+
+      <!-- Linux -->
+      <a class="dl-card" id="card-linux"
+         href="https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-linux"
+         data-platform="linux">
+        <div class="ico">🐧</div>
+        <div class="platform">Linux · x64</div>
+        <div class="filename">PersonalDebugConsole-v1.0.0-linux</div>
+        <div class="size">≈ 22.6 MB · ELF 单文件 · chmod +x 后运行</div>
+        <div class="btn">⬇️ 下载 Linux 版</div>
+      </a>
+
+      <!-- macOS -->
+      <a class="dl-card" id="card-macos"
+         href="https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-macos"
+         data-platform="macos">
+        <div class="ico">🍎</div>
+        <div class="platform">macOS · x64 / arm64</div>
+        <div class="filename">PersonalDebugConsole-v1.0.0-macos</div>
+        <div class="size">≈ 12.8 MB · Mach-O 单文件 · chmod +x 后运行</div>
+        <div class="btn">⬇️ 下载 macOS 版</div>
+      </a>
+
+      <!-- 便携版 -->
+      <a class="dl-card" id="card-portable"
+         href="https://github.com/Peter1384345/personal-debug-console/raw/builds/v1.0.0/PersonalDebugConsole-portable.html"
+         data-platform="portable">
+        <div class="ico">🌐</div>
+        <div class="platform">便携 HTML 演示版</div>
+        <div class="filename">PersonalDebugConsole-portable.html</div>
+        <div class="size">≈ 59 KB · 浏览器直接打开 · 零依赖离线可用</div>
+        <div class="btn">⬇️ 下载便携版</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== SHA256 ===== -->
+  <section class="section">
+    <h2>🔐 SHA256 校验 <span class="anchor">#sha256</span></h2>
+    <p style="color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 14px;">
+      下载后用以下命令验证完整性，确保文件未被篡改。
+    </p>
+
+    <table class="sha-table">
+      <thead>
+        <tr>
+          <th style="width:38%">文件</th>
+          <th>SHA256</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="name">PersonalDebugConsole-v1.0.0-windows.exe</td>
+          <td class="hash">59641475ddcc1dba4e7a9d9f8014a8be9340e5d2a67a47256d944185ccde8df5</td>
+        </tr>
+        <tr>
+          <td class="name">PersonalDebugConsole-v1.0.0-linux</td>
+          <td class="hash">78f4eea49b98a40a77212110326ccd713c1bfaaef819e28ae196a6b374a3055e</td>
+        </tr>
+        <tr>
+          <td class="name">PersonalDebugConsole-v1.0.0-macos</td>
+          <td class="hash">7d03639a48cab5140ca07ae2dc80d79f57d2fe0f9c6c439f19ee206ff189ab75</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="sha-link-row">
+      <span style="font-size: 0.82rem; color: var(--ink-soft);">下载完整的 <code style="color: var(--gold);">SHA256SUMS.txt</code> 校验文件：</span>
+      <a href="https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/SHA256SUMS.txt">⬇️ SHA256SUMS.txt (306 B)</a>
+    </div>
+
+    <div class="cmd-block"><span class="c-cmd">$</span> <span class="c-out"># Linux / macOS</span>
+<span class="c-cmd">shasum</span> -a 256 PersonalDebugConsole-v1.0.0-*
+<span class="c-cmd">$</span> <span class="c-out"># Windows PowerShell</span>
+<span class="c-cmd">Get-FileHash</span> PersonalDebugConsole-v1.0.0-windows.exe -Algorithm SHA256</div>
+  </section>
+
+  <!-- ===== 核心功能 ===== -->
+  <section class="section">
+    <h2>✨ 核心功能 <span class="anchor">#features</span></h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="title">💽 磁盘 & 文件管理</div>
+        <div class="desc">扫描所有盘符，进度条可视化使用率。10 种配色按文件类型分类，到阈值自动弹桌面通知。</div>
+      </div>
+      <div class="feature mint">
+        <div class="title">🛰️ 后台服务监控</div>
+        <div class="desc">150+ 条规则三层分类引擎：有益 / 无益 / 未知。可一键桌面通知可疑进程、定位路径、终止。</div>
+      </div>
+      <div class="feature rose">
+        <div class="title">🎨 暗夜贴纸 UI</div>
+        <div class="desc">手绘标题 + 涂鸦 SVG + 不干胶卡片，刻意避开 AI 模板常见的冷蓝色 + 完美对齐。</div>
+      </div>
+      <div class="feature lavender">
+        <div class="title">⚡ 双模式启动</div>
+        <div class="desc">Web UI 浏览器界面（7788 端口）+ CLI 命令行 Rich 表格，同一份代码两种玩法。</div>
+      </div>
+      <div class="feature">
+        <div class="title">🔔 跨平台通知</div>
+        <div class="desc">plyer 桌面通知（Windows / macOS / Linux 都弹窗），失败自动降级 colorama 控制台彩色。</div>
+      </div>
+      <div class="feature mint">
+        <div class="title">📦 单文件二进制</div>
+        <div class="desc">PyInstaller 打包，无需安装 Python，双击即用。GitHub Actions 自动构建三平台。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 运行方式 ===== -->
+  <section class="section">
+    <h2>🚀 运行方式 <span class="anchor">#run</span></h2>
+
+    <div style="margin-bottom: 18px;">
+      <div style="font-weight: 600; color: var(--gold); margin-bottom: 8px;">🐧 Linux / macOS</div>
+      <div class="cmd-block"><span class="c-cmd">$</span> chmod +x PersonalDebugConsole-v1.0.0-linux
+<span class="c-cmd">$</span> ./PersonalDebugConsole-v1.0.0-linux                  <span class="c-out"># 交互式：选 1 = Web UI</span>
+<span class="c-cmd">$</span> ./PersonalDebugConsole-v1.0.0-linux web              <span class="c-out"># 直接启动 Web UI</span>
+<span class="c-cmd">$</span> ./PersonalDebugConsole-v1.0.0-linux cli              <span class="c-out"># 直接进入 CLI</span></div>
+    </div>
+
+    <div>
+      <div style="font-weight: 600; color: var(--gold); margin-bottom: 8px;">🪟 Windows</div>
+      <div class="cmd-block"><span class="c-out"># 双击 .exe 即可，或在 PowerShell：</span>
+<span class="c-cmd">PS></span> .\PersonalDebugConsole-v1.0.0-windows.exe
+<span class="c-cmd">PS></span> .\PersonalDebugConsole-v1.0.0-windows.exe web -p 8888</div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <div class="footer-links">
+    <a href="https://github.com/Peter1384345/personal-debug-console">📜 源码仓库</a>
+    <a href="https://github.com/Peter1384345/personal-debug-console/releases/tag/v1.0.0">🏷️ Release v1.0.0</a>
+    <a href="https://github.com/Peter1384345/personal-debug-console/blob/main/README.md">📖 完整文档</a>
+    <a href="https://github.com/Peter1384345/personal-debug-console/blob/main/LICENSE">⚖️ MIT License</a>
+    <a href="https://github.com/Peter1384345/personal-debug-console/actions/workflows/build-release.yml">⚙️ CI 构建</a>
+  </div>
+
+</div>
+
+<script>
+// 平台自动检测
+(function detectPlatform() {
+  const ua = navigator.userAgent;
+  const platform = navigator.platform || '';
+  let os = 'unknown', label = '未知平台', recommend = null;
+
+  if (/Win/i.test(ua)) {
+    os = 'windows';
+    label = 'Windows';
+    recommend = 'card-windows';
+  } else if (/Mac/i.test(ua) || /iPhone|iPad/i.test(ua)) {
+    os = 'macos';
+    label = 'macOS';
+    recommend = 'card-macos';
+  } else if (/Linux/i.test(ua) || /X11/i.test(ua)) {
+    os = 'linux';
+    label = 'Linux';
+    recommend = 'card-linux';
+  }
+
+  const banner = document.getElementById('detect');
+  if (banner) {
+    banner.innerHTML =
+      '<span class="label">检测到平台：</span>' +
+      '<b>' + label + '</b>' +
+      (recommend ? ' · 已为你高亮推荐下载项 ⬇️' : ' · 请手动选择对应版本');
+  }
+
+  if (recommend) {
+    const card = document.getElementById(recommend);
+    if (card) card.classList.add('recommended');
+  }
+})();
+
+// 复制按钮 - 可选附加
+// (此页面无交互式复制按钮，但 SHA256 单元格 user-select: all 可一键全选)
+</script>
+
+</body>
+</html>
