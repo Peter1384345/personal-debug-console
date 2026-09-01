@@ -5,7 +5,8 @@ REM 直接双击运行，或在 cmd / PowerShell 里执行 build.bat
 setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
-set "NAME=个人调试台"
+set "NAME=PersonalDebugConsole"
+set "LABEL=个人调试台"
 set "ENTRY=start.py"
 
 echo ==^> 清理旧产物 ...
@@ -33,7 +34,7 @@ pyinstaller ^
 
 echo.
 echo ============================================================
-echo   ✅ 打包完成！产物位于 dist\%NAME%.exe
+echo   ✅ 打包完成！产物位于 dist\%NAME%.exe (label=%LABEL%)
 echo ============================================================
 dir /b dist
 exit /b 0

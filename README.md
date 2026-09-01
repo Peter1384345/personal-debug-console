@@ -148,16 +148,17 @@ python start.py cli
 
 | 平台 / 产物 | 下载 | 大小 | 说明 |
 |---|---|---|---|
-| 🪟 **Windows (x64)** | [⬇️ 个人调试台-v1.0.0-windows.exe][dl-win] | ~32 MB | 单文件 exe · 双击直接启动 Web UI |
-| 🐧 **Linux (x64)** | [⬇️ 个人调试台-v1.0.0-linux][dl-linux] | ~24 MB | ELF 单文件 · 加执行权限后 `./` 运行 |
-| 🍎 **macOS (x64/arm64)** | [⬇️ 个人调试台-v1.0.0-macos][dl-macos] | ~32 MB | Mach-O 单文件 · `chmod +x` 后运行 |
-| 🌐 **便携 HTML 演示版** | [⬇️ 个人调试台-portable-v1.0.0.html][dl-portable] | ~100 KB | 单文件 · 浏览器直接打开 · 零依赖离线可用 |
+| 🪟 **Windows (x64)** | [⬇️ PersonalDebugConsole-v1.0.0-windows.exe][dl-win] | ~32 MB | 单文件 exe · 双击直接启动 Web UI |
+| 🐧 **Linux (x64)** | [⬇️ PersonalDebugConsole-v1.0.0-linux][dl-linux] | ~24 MB | ELF 单文件 · 加执行权限后 `./` 运行 |
+| 🍎 **macOS (x64/arm64)** | [⬇️ PersonalDebugConsole-v1.0.0-macos][dl-macos] | ~32 MB | Mach-O 单文件 · `chmod +x` 后运行 |
+| 🌐 **便携 HTML 演示版** | [⬇️ PersonalDebugConsole-portable.html][dl-portable] | ~100 KB | 单文件 · 浏览器直接打开 · 零依赖离线可用 |
 
 > **自动构建**：推送到 `v*` tag 会触发 [GitHub Actions 工作流][workflow] 自动打包三平台并上传 Release。
+> 注：CI 产物文件名用 ASCII（`PersonalDebugConsole-…`）以避免跨平台编码问题，运行后内部界面标题仍为「个人调试台」。
 
-[dl-win]:      https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-windows.exe
-[dl-linux]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-linux
-[dl-macos]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/%E4%B8%AA%E4%BA%BA%E8%B0%83%E8%AF%95%E5%8F%B0-v1.0.0-macos
+[dl-win]:      https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-windows.exe
+[dl-linux]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-linux
+[dl-macos]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-macos
 [dl-portable]: https://github.com/Peter1384345/personal-debug-console/raw/builds/v1.0.0/portable.html
 [workflow]:    https://github.com/Peter1384345/personal-debug-console/actions/workflows/build-release.yml
 
@@ -165,14 +166,14 @@ python start.py cli
 
 ```bash
 # Linux / macOS — 加执行权限后双击或命令行启动
-chmod +x "个人调试台-v1.0.0-linux"
-./"个人调试台-v1.0.0-linux"                  # 交互式：选 1 = Web UI
-./"个人调试台-v1.0.0-linux" web              # 直接启动 Web UI（默认 7788 端口）
-./"个人调试台-v1.0.0-linux" cli              # 直接进入命令行模式
+chmod +x PersonalDebugConsole-v1.0.0-linux
+./PersonalDebugConsole-v1.0.0-linux                  # 交互式：选 1 = Web UI
+./PersonalDebugConsole-v1.0.0-linux web              # 直接启动 Web UI（默认 7788 端口）
+./PersonalDebugConsole-v1.0.0-linux cli              # 直接进入命令行模式
 
 # Windows — 双击 .exe 即可
 # 或在 PowerShell 里：
-.\个人调试台-v1.0.0-windows.exe web -p 8888
+.\PersonalDebugConsole-v1.0.0-windows.exe web -p 8888
 ```
 
 ### 🖨️ 从源码自行打包（贡献者 / 自定义）
@@ -190,13 +191,13 @@ pip install pyinstaller
 cd personal-debug-console
 
 # Windows：
-pyinstaller -F -n 个人调试台 --add-data "frontend;frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
+pyinstaller -F -n PersonalDebugConsole --add-data "frontend;frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
 
 # macOS / Linux：
-pyinstaller -F -n 个人调试台 --add-data "frontend:frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
+pyinstaller -F -n PersonalDebugConsole --add-data "frontend:frontend" --collect-all plyer --collect-all psutil --collect-all flask --collect-all flask_cors start.py
 ```
 
-产物在 `dist/个人调试台(.exe)`，双击即可启动。
+产物在 `dist/PersonalDebugConsole(.exe)`，双击即可启动（运行后界面标题显示「个人调试台」）。
 
 ---
 

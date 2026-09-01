@@ -7,7 +7,8 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"
 
-NAME="个人调试台"
+NAME="PersonalDebugConsole"
+LABEL="个人调试台"
 ENTRY="start.py"
 DIST_DIR="$HERE/dist"
 BUILD_DIR="$HERE/build"
@@ -39,5 +40,5 @@ pyinstaller \
   "$ENTRY"
 
 echo
-echo "✅ 打包完成！产物："
+echo "✅ 打包完成！产物 (label=${LABEL})："
 ls -lh "$DIST_DIR"

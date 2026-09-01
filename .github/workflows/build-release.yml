@@ -56,18 +56,19 @@ jobs:
         shell: bash
         run: |
           cd dist
+          # Use ASCII-only name to avoid encoding issues on CI runners
+          new_name="PersonalDebugConsole-${GITHUB_REF_NAME:-v1.0.0}-${{ matrix.platform }}${{ matrix.ext }}"
           for f in *; do
-            new_name="个人调试台-v${GITHUB_REF_NAME:-1.0.0}-${{ matrix.platform }}${{ matrix.ext }}"
             mv "$f" "$new_name" 2>/dev/null || true
-            echo "ARTIFACT=$new_name" >> "$GITHUB_ENV"
             break
           done
+          echo "ARTIFACT=$new_name" >> "$GITHUB_ENV"
           ls -lh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 个人调试台-${{ matrix.platform }}
+          name: PersonalDebugConsole-${{ matrix.platform }}
           path: dist/*
 
   release:
