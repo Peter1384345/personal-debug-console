@@ -155,6 +155,8 @@ python start.py cli
 
 > **自动构建**：推送到 `v*` tag 会触发 [GitHub Actions 工作流][workflow] 自动打包三平台并上传 Release。
 > 注：CI 产物文件名用 ASCII（`PersonalDebugConsole-…`）以避免跨平台编码问题，运行后内部界面标题仍为「个人调试台」。
+>
+> 🌐 **在线下载主页**：https://peter1384345.github.io/personal-debug-console/  （自动识别平台并高亮推荐项，含 SHA256 校验表）
 
 [dl-win]:      https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-windows.exe
 [dl-linux]:    https://github.com/Peter1384345/personal-debug-console/releases/download/v1.0.0/PersonalDebugConsole-v1.0.0-linux
